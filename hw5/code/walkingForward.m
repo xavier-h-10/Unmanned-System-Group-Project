@@ -24,7 +24,7 @@ env.ResetFcn = @(in) walkerResetFcn(in,upper_leg_length/100,lower_leg_length/100
 agent = createTD3Agent(numObs,obsInfo,numAct,actInfo,Ts);
 
 % Specify Training Options.
-maxEpisodes = 50;
+maxEpisodes = 2000;
 maxSteps = floor(Tf/Ts);
 trainOpts = rlTrainingOptions(...
     'MaxEpisodes',maxEpisodes,...

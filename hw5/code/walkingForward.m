@@ -25,7 +25,7 @@ agent = createTD3Agent(numObs,obsInfo,numAct,actInfo,Ts);
 
 % Specify Training Options.
 % When reward exceeds 200, save the agent.
-maxEpisodes = 4000;
+maxEpisodes = 2000;
 maxSteps = floor(Tf/Ts);
 trainOpts = rlTrainingOptions(...
     'MaxEpisodes',maxEpisodes,...
@@ -36,7 +36,7 @@ trainOpts = rlTrainingOptions(...
     'StopTrainingCriteria','EpisodeCount',...
     'StopTrainingValue',maxEpisodes,...
     'SaveAgentCriteria','EpisodeReward',...
-    'SaveAgentValue',200);
+    'SaveAgentValue',150);
 
 % train the agent in parallel.
 trainOpts.UseParallel = true;
@@ -45,7 +45,7 @@ trainOpts.ParallelizationOptions.StepsUntilDataIsSent = 32;
 trainOpts.ParallelizationOptions.DataToSendFromWorkers = 'Experiences';
 
 
-doTraining = false;
+doTraining = true;
 if doTraining    
     % Train the agent.
     trainingStats = train(agent,env,trainOpts);

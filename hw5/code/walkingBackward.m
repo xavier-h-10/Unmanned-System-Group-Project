@@ -44,7 +44,7 @@ trainOpts.ParallelizationOptions.StepsUntilDataIsSent = 32;
 trainOpts.ParallelizationOptions.DataToSendFromWorkers = 'Experiences';
 
 
-doTraining = true;
+doTraining = false;
 if doTraining    
     % Train the agent.
     trainingStats = train(agent,env,trainOpts);

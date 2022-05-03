@@ -2,7 +2,7 @@
 robotParametersRL
 
 % Open the Simulink model.
-mdl = 'rlWalkingBipedRobot';
+mdl = 'rlWalkingBackwardBipedRobot';
 open_system(mdl)
 
 % Create the observation specification.
@@ -24,7 +24,6 @@ env.ResetFcn = @(in) walkerResetFcn(in,upper_leg_length/100,lower_leg_length/100
 agent = createTD3Agent(numObs,obsInfo,numAct,actInfo,Ts);
 
 % Specify Training Options.
-% When reward exceeds 200, save the agent.
 maxEpisodes = 4000;
 maxSteps = floor(Tf/Ts);
 trainOpts = rlTrainingOptions(...
@@ -36,7 +35,7 @@ trainOpts = rlTrainingOptions(...
     'StopTrainingCriteria','EpisodeCount',...
     'StopTrainingValue',maxEpisodes,...
     'SaveAgentCriteria','EpisodeReward',...
-    'SaveAgentValue',150);
+    'SaveAgentValue',200);
 
 % train the agent in parallel.
 trainOpts.UseParallel = true;
@@ -51,12 +50,11 @@ if doTraining
     trainingStats = train(agent,env,trainOpts);
 else
     % Load a pretrained agent
-    load('Agent1627.mat','saved_agent')
-    agent= saved_agent;
+    load('WalkingBackwardAgent.mat','agent')
 end
 
 if doTraining
-    save('WalkingForwardAgent.mat','agent')
+    save('WalkingBackwardAgent.mat','agent')
 end
     
 

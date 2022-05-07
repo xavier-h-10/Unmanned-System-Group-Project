@@ -36,7 +36,7 @@ trainOpts = rlTrainingOptions(...
     'StopTrainingCriteria','EpisodeCount',...
     'StopTrainingValue',maxEpisodes,...
     'SaveAgentCriteria','EpisodeReward',...
-    'SaveAgentValue',150);
+    'SaveAgentValue',100);
 
 % train the agent in parallel.
 trainOpts.UseParallel = true;
@@ -45,7 +45,7 @@ trainOpts.ParallelizationOptions.StepsUntilDataIsSent = 32;
 trainOpts.ParallelizationOptions.DataToSendFromWorkers = 'Experiences';
 
 
-doTraining = true;
+doTraining = false;
 if doTraining    
     % Train the agent.
     trainingStats = train(agent,env,trainOpts);

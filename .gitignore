@@ -10,5 +10,9 @@ hw5/code/savedAgents_2
 
 hw5/code/walkingForward/slprj/*
 hw5/code/walkingBackward/slprj/*
+hw5/code/walkingDiagonal/slprj/*
+
+hw5/code/walkingDiagonal/savedAgents/*
+
 
 *.slxc

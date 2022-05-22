@@ -1,7 +1,7 @@
 from dis import dis
 from os import stat
 import sys
-sys.path.append("/home/zhemin/train")
+sys.path.append("../")
 from env import combat_env, discrete_env
 from utils.define import PI, COMBAT_OBS_INFO
 from trainer import sac_trainer, dqn_trainer
@@ -163,7 +163,7 @@ def get_sac_trainer():
     使用sac方法进行训练
     parallel_num: 与环境交互采样数据的进程个数，一般越多训练速度越快。但是多开会占用大量内存，建议根据电脑性能调整。
     """
-    parallel_num = 25
+    parallel_num = 10
 
     # TODO: 调节超参数
     return sac_trainer.SACTrainer(

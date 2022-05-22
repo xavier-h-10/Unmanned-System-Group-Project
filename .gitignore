@@ -16,3 +16,9 @@ hw5/code/walkingDiagonal/savedAgents/*
 finalProject/env/__pycache__/*
 
 *.slxc
+
+finalProject/logs/*
+
+finalProject/run/save/*
+finalProject/trainer/__pycache__/*
+finalProject/env/__pycache__/*

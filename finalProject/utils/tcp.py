@@ -2,14 +2,24 @@ from utils.tools import make_struct
 
 import ctypes
 import socket
+import logging
+import time
 
 from typing import List, Iterable, ClassVar
 
 
-def connect(ip: str, port: int) -> socket.socket:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((ip, port))
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("tcp")
 
+def connect(ip: str, port: int) -> socket.socket:
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((ip, port))
+            break
+        except Exception as e:
+            logger.warn("socket connect exception:{}".format(e))
+            time.sleep(5)
     return sock
 
 

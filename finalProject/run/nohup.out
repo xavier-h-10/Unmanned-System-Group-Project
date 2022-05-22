@@ -1,0 +1,51 @@
+python: can't open file '/Disk7/zhemin/project/finalProject/run/20220521_v1.p': [Errno 2] No such file or directory
+2022-05-22 16:41:42.029240: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2022-05-22 16:41:43.791216: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1525] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 161 MB memory:  -> device: 0, name: TITAN Xp, pci bus id: 0000:04:00.0, compute capability: 6.1
+2022-05-22 16:41:43.794156: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1525] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 11155 MB memory:  -> device: 1, name: TITAN Xp, pci bus id: 0000:06:00.0, compute capability: 6.1
+2022-05-22 16:41:43.837263: I tensorflow/stream_executor/cuda/cuda_driver.cc:739] failed to allocate 161.94M (169803776 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2022-05-22 16:41:43.954462: E tensorflow/stream_executor/cuda/cuda_blas.cc:232] failed to create cublas handle: CUBLAS_STATUS_NOT_INITIALIZED
+2022-05-22 16:41:43.954527: E tensorflow/stream_executor/cuda/cuda_blas.cc:234] Failure to initialize cublas may be due to OOM (cublas needs some free memory when you initialize it, and your deep-learning framework may have preallocated more than its fair share), or may be because this binary was not built with support for the GPU in your machine.
+2022-05-22 16:41:43.954584: W tensorflow/core/framework/op_kernel.cc:1745] OP_REQUIRES failed at matmul_op_impl.h:442 : INTERNAL: Attempting to perform BLAS operation using StreamExecutor without BLAS support
+Traceback (most recent call last):
+  File "/Disk7/zhemin/project/finalProject/run/20220521_v1.py", line 215, in <module>
+    tf_agents.system.system_multiprocessing.handle_main(
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/tf_agents/system/default/multiprocessing_core.py", line 78, in handle_main
+    return app.run(parent_main_fn, *args, **kwargs)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/absl/app.py", line 312, in run
+    _run_main(main, args)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/absl/app.py", line 258, in _run_main
+    sys.exit(main(argv))
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/absl/app.py", line 312, in run
+    _run_main(main, args)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/absl/app.py", line 258, in _run_main
+    sys.exit(main(argv))
+  File "/Disk7/zhemin/project/finalProject/run/20220521_v1.py", line 209, in train
+    trainer = get_sac_trainer()
+  File "/Disk7/zhemin/project/finalProject/run/20220521_v1.py", line 169, in get_sac_trainer
+    return sac_trainer.SACTrainer(
+  File "/Disk7/zhemin/project/finalProject/run/../trainer/sac_trainer.py", line 80, in __init__
+    agent = sac_agent.SacAgent(
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/gin/config.py", line 1605, in gin_wrapper
+    utils.augment_exception_message_and_reraise(e, err_str)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/gin/utils.py", line 41, in augment_exception_message_and_reraise
+    raise proxy.with_traceback(exception.__traceback__) from None
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/gin/config.py", line 1582, in gin_wrapper
+    return fn(*new_args, **new_kwargs)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/tf_agents/agents/sac/sac_agent.py", line 169, in __init__
+    self._critic_network_1.create_variables(critic_spec)
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/tf_agents/networks/network.py", line 221, in create_variables
+    outputs = self.__call__(
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/tf_agents/networks/network.py", line 427, in __call__
+    outputs, new_state = super(Network, self).__call__(**normalized_kwargs)  # pytype: disable=attribute-error  # typed-keras
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/keras/utils/traceback_utils.py", line 67, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/Disk7/zhemin/tf/lib/python3.9/site-packages/tf_agents/agents/ddpg/critic_network.py", line 162, in call
+    observations = layer(observations, training=training)
+tensorflow.python.framework.errors_impl.InternalError: Exception encountered when calling layer "observation_encoding/dense" (type Dense).
+
+Attempting to perform BLAS operation using StreamExecutor without BLAS support [Op:MatMul]
+
+Call arguments received:
+  • inputs=tf.Tensor(shape=(1, 28), dtype=float32)
+  In call to configurable 'SacAgent' (<class 'tf_agents.agents.sac.sac_agent.SacAgent'>)

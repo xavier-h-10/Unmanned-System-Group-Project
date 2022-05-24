@@ -19,7 +19,7 @@ def connect(ip: str, port: int) -> socket.socket:
             break
         except Exception as e:
             logger.warn("socket connect exception:{}".format(e))
-            time.sleep(5)
+            time.sleep(30)
     return sock
 
 

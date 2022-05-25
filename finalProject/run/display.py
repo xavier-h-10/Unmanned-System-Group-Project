@@ -1,4 +1,4 @@
-import example
+import display_20220521_v1 as example
 
 from env.display_env import DisplayEnv
 from utils.define import ACTION_INFO, COMBAT_OBS_INFO
@@ -36,15 +36,14 @@ def _gen_random_init_pos():
 
 
 def main():
-    # 在此处加载训练好的策略
-    policy = policy_loader.load('./save/example/sac/eval_policy')
+    # policy = policy_loader.load('./save/example/sac/eval_policy')
+    policy = policy_loader.load('./save/20220521/sac/eval_policy')
 
     opp_policy, opp_state_fcn, opp_state_info = _make_random_policy()
 
     display = DisplayEnv(
         ip=_IP, port=_PORT,
 
-        # 修改第一项，第二项是靶机
         state_size=[len(example.state_min), opp_state_info[0]],
         state_min=[example.state_min, opp_state_info[1]],
         state_max=[example.state_max, opp_state_info[2]],
@@ -55,17 +54,17 @@ def main():
     )
 
     ending = False
-    for _ in range(5):  # 连续查看五局游戏
+    for _ in range(5): 
         display.reset()
         while not ending:
-            time.sleep(0.1)  # 放慢速度
+            time.sleep(0.1) 
             ending = display.step()
         ending = False
-        time.sleep(5.)      # 等待训练环境重启
+        time.sleep(5.) 
 
 
 if __name__ == '__main__':
     config = tf.compat.v1.ConfigProto()
-    config.gpu_options.allow_growth = True  # Tensorflow启动时默认占用所有显存，这个设置可以减少显存占用，防止训练环境卡顿
+    config.gpu_options.allow_growth = True
     with tf.compat.v1.Session(config=config).as_default():
         main()

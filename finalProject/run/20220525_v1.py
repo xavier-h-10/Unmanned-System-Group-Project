@@ -1,29 +1,31 @@
 import sys
 sys.path.append("../")
-from tf_agents.policies.random_py_policy import RandomPyPolicy
-from typing import Tuple
-from absl import logging
-from absl import app
-import numpy as np
-import functools
-import tf_agents
-import random
-from trainer import sac_trainer, dqn_trainer
-from utils.define import PI, COMBAT_OBS_INFO
-from env import combat_env, discrete_env
 import logging as log
+from env import combat_env, discrete_env
+from utils.define import PI, COMBAT_OBS_INFO
+from trainer import sac_trainer, dqn_trainer
+import random
+import tf_agents
+import functools
+from numpy.linalg import norm
+import numpy as np
+from absl import app
+from absl import logging
+from typing import Tuple
+from tf_agents.policies.random_py_policy import RandomPyPolicy
 
 log.basicConfig(level=logging.INFO,
                 format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = log.getLogger("train")
 
 _IP = '10.119.10.174'
-_PORT = 10088
+_PORT = 10089
 
-sac_prefix = './save/20220521/sac'
-dqn_prefix = './save/20220521/dqn'
+sac_prefix = './save/20220525_v1/sac'
+dqn_prefix = './save/20220525_v1/dqn'
 
 tot = 0
+
 
 def get_state(obs: np.ndarray) -> np.ndarray:
     """
@@ -62,34 +64,40 @@ def get_reward(obs: np.ndarray, prev_obs: np.ndarray) -> Tuple[float, bool]:
     tot += 1
     damage_cause, damage_suffer, health, opp_health = obs[26], obs[12], obs[13], obs[27]
 
-    pos, opp_pos = obs[0:3], obs[14:17]
+    pos, opp_pos= obs[0:3], obs[14:17]
     angle, opp_angle = obs[3:6], obs[17: 20]
     linear_speed, opp_linear_speed = obs[6:9], obs[20: 23]
     angular_speed, opp_angular_speed = obs[9:12], obs[23:26]
 
-    speed = np.linalg.norm(linear_speed, ord=2)
-    opp_speed = np.linalg.norm(opp_linear_speed, ord=2)
+    speed, opp_speed = norm(linear_speed), norm(opp_linear_speed)
+    dis= norm(pos-opp_pos)
 
     # 如果任意一方生命值降为0，给予高奖励或惩罚，并终止当前episode
     if health <= 0. or opp_health <= 0.:
-        return -500. if health < opp_health else 500., True
+        return -5000. if health < opp_health else 5000., True
 
     # 需要特殊判断prev_obs是否为None
     if prev_obs is None:
         return 0., False
 
-    r_v_self = speed/100-0.5 if speed < 50 else 0
-    r_v = (speed-opp_speed)/100
-    r_pos = (800-np.linalg.norm(pos-opp_pos, ord=2)) * 0.1
-    r_damage = (damage_cause-damage_suffer)*3
+    prev_pos, opp_prev_pos =  prev_obs[0:3], prev_obs[14:17]
+    prev_dis = norm(prev_pos-opp_prev_pos)
+    r_v_self = (speed/600-0.5)*100 if speed < 300 else 0
+    r_v = (speed-opp_speed)*1
+   # r_pos = (750-dis) * 0.1
+    
+    r_pos = 0.01*(2000-dis) if  dis>2000 else 2000-dis
 
-    dis=np.linalg.norm(pos-opp_pos, ord=2)
+    r_damage = (damage_cause-damage_suffer)*30
+    r_delta_pos = (prev_dis-dis)*10
 
-    logger.info("tot:{}, dis:{}, pos:{}, opp_pos:{}, speed:{}, r_v_self:{}, r_v:{}, r_pos:{}, r_damage:{} damage_cause:{}, damage_suffer:{}".format(
-            tot, dis, pos, opp_pos, speed,  r_v_self, r_v, r_pos, r_damage, damage_cause, damage_suffer))
+    r = r_delta_pos+r_v_self+r_v+r_pos+r_damage + 500
 
+    if (tot // 300) % 10 == 0:
+        logger.info("tot:{}, reward:{}, dis:{}, prev_dis:{}, speed:{}, opp_speed:{}, r_delta_pos:{}, r_v_self:{}, r_v:{}, r_pos:{}, r_damage:{} damage_cause:{}, damage_suffer:{}".format(
+            tot, r, dis, prev_dis, speed, opp_speed, r_delta_pos, r_v_self, r_v, r_pos, r_damage, damage_cause, damage_suffer))
 
-    return r_v_self+r_v+r_pos+r_damage, False
+    return r, False
 
 
 def _gen_random_init_pos():
@@ -99,7 +107,7 @@ def _gen_random_init_pos():
     翻滚、俯仰、偏航角按照环境限制最大范围进行随机（环境各个观测量的取值范围见utils.define.COMBAT_OBS_INFO）
     TODO[可选]: 可以自己修改xyz的范围，先从容易探索的小范围开始，训练一段时间发现算法能够收敛之后终止训练程序，扩大范围，然后重新运行训练程序。
     """
-    return [([random.uniform(-1e4, 1e4) for _ in range(2)] + [random.uniform(1e3, 1e4)] +
+    return [([random.uniform(-5000, 5000) for _ in range(2)] + [random.uniform(2000, 10000)] +
              [random.uniform(COMBAT_OBS_INFO[1][i], COMBAT_OBS_INFO[2][i]) for i in range(3, 6)]) for _ in range(2)]
 
 
@@ -195,13 +203,13 @@ def get_sac_trainer():
         critic_action_fc_params=(128, 128),
         # Critic经过编码层后连接的全连接层隐层节点数量
         critic_joint_fc_layer_params=(256, 256),
-        actor_lr=1e-4,                                                  # Actor学习率
-        critic_lr=1e-4,                                                 # Critic学习率
+        actor_lr=1e-3,                                                  # Actor学习率
+        critic_lr=1e-3,                                                 # Critic学习率
         # SAC算法中用于更新alpha变量的学习率
-        alpha_lr=1e-4,
+        alpha_lr=1e-3,
         gamma=0.99,                                                     # 折扣因子
         # 奖励放缩，调整参数使其乘上一局游戏总奖励绝对值小于1000
-        reward_scale_factor=1.0,
+        reward_scale_factor=3e-4,
         target_update_tau=0.005,                                        # 目标网络软更新参数
         target_update_period=1,                                         # 更新目标网络间隔时间
         # 训练网络的batch大小

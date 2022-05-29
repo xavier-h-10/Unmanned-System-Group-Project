@@ -23,3 +23,11 @@ finalProject/run/save/*
 finalProject/trainer/__pycache__/*
 finalProject/env/__pycache__/*
 finalProject/run/20220521_v1.txt
+
+finalProject_v2/env/__pycache__/*
+finalProject_v2/policy/__pycache__/*
+
+finalProject_v2/trainer/__pycache__/*
+finalProject_v2/run/save/example/sac/checkpoint/*
+finalProject_v2/utils/__pycache__/*
+finalProject_v2/run/save/example/sac/summary/*

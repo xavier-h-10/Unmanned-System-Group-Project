@@ -1,3 +1,5 @@
+from logging import Logger
+import time
 from utils.tools import make_struct
 
 import ctypes
@@ -7,11 +9,15 @@ from typing import List, Iterable, ClassVar
 
 
 def connect(ip: str, port: int) -> socket.socket:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((ip, port))
-
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((ip, port))
+            break
+        except Exception as e:
+            Logger.warn("socket connect exception:{}".format(e))
+            time.sleep(30)
     return sock
-
 
 def recv_exact_n_bytes_into(sock: socket.socket, n: int, buf: memoryview):
     fetch_max = 1024

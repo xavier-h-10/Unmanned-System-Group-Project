@@ -84,9 +84,9 @@ def env_constructor():
     # 使用预设的策略进行训练
     return combat_env.CombatEnv(
         ip=_IP, port=_PORT,
-        mock_policy_fcn=RandomPolicy,
+       # mock_policy_fcn=RandomPolicy,
         # mock_policy_fcn=GreedyPolicy,
-        # mock_policy_fcn=LazyPolicy,
+        mock_policy_fcn=LazyPolicy,
         state_size=len(state_min), state_min=state_min, state_max=state_max,
         get_state_fcn=get_state, get_reward_fcn=get_reward,
         max_step=2000,

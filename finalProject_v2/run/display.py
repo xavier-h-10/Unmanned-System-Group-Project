@@ -3,6 +3,7 @@ from env.display_env import DisplayEnv
 from policy.lazy_policy import LazyPolicy
 from policy.random_policy import RandomPolicy
 from policy.greedy_policy import GreedyPolicy
+from policy.pid_policy import PIDPolicy
 from env.discrete_env import DirectionActionWrapper
 from utils.define import ACTION_INFO, COMBAT_OBS_INFO
 
@@ -40,6 +41,12 @@ def _make_greedy_policy():
     greedy_policy = GreedyPolicy()
     get_state_fcn = lambda _: _
     return greedy_policy, get_state_fcn, COMBAT_OBS_INFO, None
+
+
+def _make_pid_policy():
+    pid_policy = PIDPolicy()
+    get_state_fcn = lambda _: _
+    return pid_policy, get_state_fcn, COMBAT_OBS_INFO, None
 
 
 def _gen_random_init_pos():
@@ -91,6 +98,27 @@ def _one_policy_display_env():
         ip=_IP, port=_PORT,
 
         # 修改第一项，第二项是靶机
+        state_size=[state_info[0], opp_state_info[0]],
+        state_min=[state_info[1], opp_state_info[1]],
+        state_max=[state_info[2], opp_state_info[2]],
+        get_state_fcn=[state_fcn, opp_state_fcn],
+        policies=[policy, opp_policy],
+        action_wrappers=[action_wrapper, opp_action_wrapper],
+        gen_init_pos_fcn=_gen_random_init_pos,
+        max_step=3000
+    )
+
+    return display
+
+
+def _two_policy_display_env():
+    # opp_policy, opp_state_fcn, opp_state_info, opp_action_wrapper = _make_random_policy()
+    # opp_policy, opp_state_fcn, opp_state_info, opp_action_wrapper = _make_lazy_policy()
+    policy, state_fcn, state_info, action_wrapper = _make_pid_policy()
+    opp_policy, opp_state_fcn, opp_state_info, opp_action_wrapper = _make_greedy_policy()
+
+    display = DisplayEnv(
+        ip=_IP, port=_PORT,
         state_size=[state_info[0], opp_state_info[0]],
         state_min=[state_info[1], opp_state_info[1]],
         state_max=[state_info[2], opp_state_info[2]],

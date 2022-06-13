@@ -61,6 +61,9 @@ class GreedyPolicy(PyPolicy):
         # 拿到的obs是归一化过的，需要还原
         obs = denorm(time_step.observation, COMBAT_OBS_INFO[1], COMBAT_OBS_INFO[2])
         rx, ry, rz, roll, pitch, yaw = obs[14] - obs[0], obs[15] - obs[1], obs[16] - obs[2], obs[3], obs[4], obs[5]
+        pitch_omega, yaw_omega = obs[10], obs[11]
+        print("pitch_omega", pitch_omega)
+        print("yaw_omega", yaw_omega)
 
         dist = math.sqrt(rx ** 2 + ry ** 2 + rz ** 2)
 
@@ -73,5 +76,8 @@ class GreedyPolicy(PyPolicy):
 
         # 输出的动作需要归一化
         norm_action = norm(np.array([0., pitch_action, yaw_action, throttle_action]), ACTION_INFO[1], ACTION_INFO[2])
+
+        print("pitch_diff", pitch_diff, "pitch_action", pitch_action)
+        print("yaw_diff", yaw_diff, "yaw_action", yaw_action)
 
         return PolicyStep(norm_action, None, None)
